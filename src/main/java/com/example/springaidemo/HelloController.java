@@ -2,9 +2,7 @@ package com.example.springaidemo;
 
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class HelloController {
@@ -18,11 +16,20 @@ public class HelloController {
         this.api = api;
     }
 
-    @GetMapping("/ai/generate")
+    @GetMapping("/ai/hello")
     public OllamaApi.GenerateResponse embed(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         OllamaApi.GenerateRequest request = OllamaApi.GenerateRequest.builder(message)
                 .withStream(false)
                 .withModel(model)
+                .build();
+        return api.generate(request);
+    }
+
+    @PostMapping("/ai/generate")
+    public OllamaApi.GenerateResponse embed(@RequestBody PromptRequest req) {
+        OllamaApi.GenerateRequest request = OllamaApi.GenerateRequest.builder(req.prompt())
+                .withStream(false)
+                .withModel(req.model())
                 .build();
         return api.generate(request);
     }
